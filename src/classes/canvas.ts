@@ -8,6 +8,8 @@ export class Canvas {
   ) {
     this.element = document.createElement('canvas');
     this.element.setAttribute('id', id);
+    this.element.width = 400;
+    this.element.height = 480;
     this.element.innerHTML = 'This canvas element renders a simple computer game.';
     document.body.appendChild(this.element);
 
