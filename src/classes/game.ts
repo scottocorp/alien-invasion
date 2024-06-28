@@ -1,14 +1,16 @@
 import '../assets/style.css';
+import { Kibo } from '../utilities/kibo';
 import { Canvas } from './canvas';
 import { GoodGuy } from './goodguy';
 
 export class Game {
+  static kibo: any;
   static canvas: Canvas;
   static goodGuy: GoodGuy;
 
-  static init() {
+  static init = function () {
     try {
-      this.canvas = new Canvas('canvas')
+      this.canvas = new Canvas('canvas');
 
       this.goodGuy = new GoodGuy(
         this.canvas, 
@@ -21,10 +23,21 @@ export class Game {
         "255,0,0",
       );
 
+      Game.eventSetup();
+
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);
       }
     }
+  }
+
+  static eventSetup = function () {
+    Game.kibo = new Kibo();
+    Game.kibo.down(['left', 'right'], () => {
+
+      console.log(Game.kibo.lastKey().toUpperCase());
+      
+    })
   }
 }
