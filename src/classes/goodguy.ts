@@ -1,18 +1,18 @@
 
 // GoodGuyStatus contains all the possible good guy statuses
 export enum GoodGuyStatus {
-  "DESTROYED" = -1,
-  "TRANSITION" = 0,
-  "STATIONARY" = 1,
-  "LEFT" = 2,
-  "RIGHT" = 3
+  DESTROYED = -1,
+  TRANSITION = 0,
+  STATIONARY = 1,
+  LEFT = 2,
+  RIGHT = 3
 }
 
 // The GoodGuy class is used to represent the user, or "good guy" in the game.
 export class GoodGuy {
   
   private _context: any;
-  private _xPos: number;
+  public _xPos: number;
   private _vertices: any;
   private _status: GoodGuyStatus;
   private _alpha: number;
@@ -40,6 +40,32 @@ export class GoodGuy {
     this.create();
   }
 
+  public render = function () {
+
+    // console.log(`GoodGuy.render() ${this._status} ${this._xPos} ${this._goodGuySpeed} ${GoodGuyStatus.LEFT}`);
+
+    if (this._status == GoodGuyStatus.LEFT) {
+      // console.log('hwody!');
+		  // The user is holding down the left arrow key, so we move goodGuy left.
+      this._xPos -= this._goodGuySpeed;
+      if (this._xPos < this._goodGuyXRangeStart) {
+			// But no further left than the start of goodGuy's constraining range.
+        this._xPos = this._goodGuyXRangeStart;
+      }
+    }
+
+    if (this._status == GoodGuyStatus.RIGHT) {
+      // The user is holding down the right arrow key, so we move goodGuy right.
+      this._xPos += this._goodGuySpeed;
+      if (this._xPos > this._goodGuyXRangeStart + this._goodGuyXRangeWidth - 20) {
+			  // But no further right than the end of goodGuy's constraining range.
+        this._xPos = this._goodGuyXRangeStart + this._goodGuyXRangeWidth - 20;
+      }
+    }
+
+    this.create();
+  }
+
   private create = function () {
 
     // First we take a backup of the context...
@@ -49,7 +75,7 @@ export class GoodGuy {
     this._context.translate(this._xPos, this._yPos);
   
     // And draw a polygon, the vertices of which are stored in this.vertices
-    this._context.fillStyle = "rgba(" + this._color + ", " + this._alpha + ")";  
+    this._context.fillStyle = `rgba(${this._color}, ${this._alpha})`;  
     this._context.beginPath();
   
     this._context.moveTo(this._vertices[0].x, this._vertices[0].y);
