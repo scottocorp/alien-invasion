@@ -42,10 +42,7 @@ export class GoodGuy {
 
   public render = function () {
 
-    // console.log(`GoodGuy.render() ${this._status} ${this._xPos} ${this._goodGuySpeed} ${GoodGuyStatus.LEFT}`);
-
     if (this._status == GoodGuyStatus.LEFT) {
-      // console.log('hwody!');
 		  // The user is holding down the left arrow key, so we move goodGuy left.
       this._xPos -= this._goodGuySpeed;
       if (this._xPos < this._goodGuyXRangeStart) {
