@@ -11,22 +11,19 @@ export enum GoodGuyStatus {
 // The GoodGuy class is used to represent the user, or "good guy" in the game.
 export class GoodGuy {
   
-  private _context: any;
   public _xPos: number;
   private _vertices: any;
   private _status: GoodGuyStatus;
   private _alpha: number;
 
   constructor(
-    canvas: any,
+    private _context: any,
     private _goodGuyXRangeStart: number,
     private _goodGuyXRangeWidth: number,
     private _yPos: number,
     private _goodGuySpeed: number,
     private _color: string,
 	) {
-
-    this._context = canvas.ctx;
 
     // Place the goodGuy squarely in the middle of the range that has been assigned.
     this._xPos = this._goodGuyXRangeStart + 0.5 * this._goodGuyXRangeWidth-10;

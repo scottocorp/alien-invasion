@@ -9,12 +9,11 @@ export enum TextButtonStatus {
 // TextButton is used to represent both text fields and buttons on the canvas.
 // If the clickAction parameter is null, it's a text field. Otherwise, it's a button, and clickAction is the function to invoke when the button is clicked.
 export class TextButton {
-  private _context: any;
   private _status: TextButtonStatus;
   private _alpha: number;
 
   constructor(
-    canvas: any,
+    private _context: any,
     private _text: string[],
     private _xPos: number,
     private _yPos: number,
@@ -25,7 +24,6 @@ export class TextButton {
     private _background: boolean,
     public clickAction: any,
   ) {
-    this._context = canvas.ctx;
 
     this._status = TextButtonStatus.NORMAL;
     this._alpha = 0.8;

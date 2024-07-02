@@ -95,7 +95,7 @@ export class Game {
   static levelInit = function() {
 
 		Game.goodGuy = new GoodGuy(
-			Game.canvas, 
+			Game.canvas.ctx, 
 			15,                                 /* goodGuy's horizontal range of movement - starting point */
 			Game.canvas.element.width - 10,     /* goodGuy's horizontal range of movement - width */
 			Game.canvas.element.height - 22,    /* y position of goodGuy */
@@ -106,7 +106,7 @@ export class Game {
 		);
 
 		Game.exitButton = new TextButton(
-			Game.canvas,
+			Game.canvas.ctx,
 			['exit'],
 			175, 
 			10, 
@@ -143,7 +143,7 @@ export class Game {
 		// This function creates the appropriate canvas objects. 
 			
 		Game.gameHeader = new TextButton(
-			Game.canvas,
+			Game.canvas.ctx,
 			['Alien Invasion'],
 			10, 
 			10, 
@@ -156,7 +156,7 @@ export class Game {
 		);	
 	
 		Game.introText = new TextButton(
-			Game.canvas,
+			Game.canvas.ctx,
 			['Use left and right arrow keys to move.', 'Use the spacebar to fire.', 'Good luck!'],
 			10, 
 			50, 
@@ -169,7 +169,7 @@ export class Game {
 		);	
 	
 		Game.startButton = new TextButton(
-			Game.canvas,
+			Game.canvas.ctx,
 			['start'],
 			170, 
 			205, 
