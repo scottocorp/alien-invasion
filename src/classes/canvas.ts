@@ -1,19 +1,17 @@
+import { CANVAS_WIDTH, CANVAS_HEIGHT } from '../constants'
 import { Game } from './game';
 
 export class Canvas {
   public element: any;
   public ctx: any;
 
-  static readonly CANVAS_WIDTH = 400;
-  static readonly CANVAS_HEIGHT = 480;
-
   constructor(
     public id: string
   ) {
     this.element = document.createElement('canvas');
     this.element.setAttribute('id', id);
-    this.element.width = Canvas.CANVAS_WIDTH;
-    this.element.height = Canvas.CANVAS_HEIGHT;
+    this.element.width = CANVAS_WIDTH;
+    this.element.height = CANVAS_HEIGHT;
     this.element.innerHTML = 'This canvas element renders a simple computer game.';
     document.body.appendChild(this.element);
 

@@ -1,12 +1,4 @@
-
-// GoodGuyStatus contains all the possible good guy statuses
-export enum GoodGuyStatus {
-  DESTROYED = -1,
-  TRANSITION = 0,
-  STATIONARY = 1,
-  LEFT = 2,
-  RIGHT = 3
-}
+import { GoodGuyStatus } from '../constants'
 
 // The GoodGuy class is used to represent the user, or "good guy" in the game.
 export class GoodGuy {

@@ -1,29 +1,14 @@
 import '../assets/style.css';
+import { 
+	GameState,
+	GoodGuyStatus,
+	GAME_LEVEL_BASE,
+	GAME_LEVEL_COLORS
+} from '../constants'
 import { Kibo } from '../utilities/kibo';
 import { Canvas } from './canvas';
-import { GoodGuy, GoodGuyStatus } from './goodguy';
+import { GoodGuy } from './goodguy';
 import { TextButton } from './textbutton';
-
-// GameState contains all the possible game states.  
-export enum GameState {
-  SPLASH = 0,
-  NEW_LEVEL = 1,
-  END_OF_LEVEL = 2,
-  END_OF_GAME = 3,
-  PLAYER_DESTROYED = 4,
-  LEVEL_RESUME = 5,
-  NEW_GAME = 6
-}
-
-// The following object is used as a base to represent a game level. Each of the properties represents a game parameter.
-const GAME_LEVEL_BASE = {
-	count: 1,
-	goodGuySpeed: 3,
-	goodGuyColour: '255,0,0',
-	badGuyColour: '255,0,0',
-};
-
-const GAME_LEVEL_COLORS = ['255,85,170', '255,0,0', '0,170,255'];
 
 export class Game {
   static kibo: any;

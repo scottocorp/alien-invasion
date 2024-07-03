@@ -1,10 +1,4 @@
-
-// TextButtonStatus contains all the possible TextButton statuses.
-export enum TextButtonStatus {
-  NORMAL = 0,
-  TRANSITION = 1,
-  END_OF_TRANSITION = -1
-}
+import { TextButtonStatus } from '../constants'
 
 // TextButton is used to represent both text fields and buttons on the canvas.
 // If the clickAction parameter is null, it's a text field. Otherwise, it's a button, and clickAction is the function to invoke when the button is clicked.
