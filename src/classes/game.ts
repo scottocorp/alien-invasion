@@ -15,9 +15,20 @@ export enum GameState {
   NEW_GAME = 6
 }
 
+// The following object is used as a base to represent a game level. Each of the properties represents a game parameter.
+const GAME_LEVEL_BASE = {
+	count: 1,
+	goodGuySpeed: 3,
+	goodGuyColour: '255,0,0',
+	badGuyColour: '255,0,0',
+};
+
+const GAME_LEVEL_COLORS = ['255,85,170', '255,0,0', '0,170,255'];
+
 export class Game {
   static kibo: any;
   static canvas: Canvas;
+	static currentLevel: any = null;
   static goodGuy: GoodGuy;
   static animationTimeoutId: number;
 	static gameState: GameState;
@@ -65,7 +76,9 @@ export class Game {
 				// Here we set up a new game.
 				console.log('NEW_GAME');
 				
+				Game.currentLevel = null;
 				Game.clearCanvas();
+				Game.getNextLevel();
 				Game.levelInit();
 				
 				break;
@@ -99,10 +112,8 @@ export class Game {
 			15,                                 /* goodGuy's horizontal range of movement - starting point */
 			Game.canvas.element.width - 10,     /* goodGuy's horizontal range of movement - width */
 			Game.canvas.element.height - 22,    /* y position of goodGuy */
-			// this.currentLevel.goodGuySpeed,  /* goodGuy Speed */	
-			// this.currentLevel.goodGuyColour  /* goodGuy Colour */
-			3,
-			'255,0,0',
+			Game.currentLevel.goodGuySpeed,  		/* goodGuy Speed */	
+			Game.currentLevel.goodGuyColour  		/* goodGuy Colour */
 		);
 
 		Game.exitButton = new TextButton(
@@ -123,7 +134,25 @@ export class Game {
 		Game.functionToAnimate = Game.levelRender;
 
 		Game.animationLoop();
-}
+	}
+
+	static getNextLevel = function() {	
+		// Here we set up parameters for the current level. These parameters also determine the difficulty of the level. 
+		
+		if (!Game.currentLevel) {
+			// We initialize currentLevel to the first level by cloning gameLevelBase.
+			Game.currentLevel = JSON.parse(JSON.stringify(GAME_LEVEL_BASE))
+		} else {			
+			// But as the game progresses, the difficulty increases.
+
+			Game.currentLevel.count++;
+		}
+
+		// Also, we cycle through all the different colour combinations we created, to add some variety.
+		var colourComboCount = GAME_LEVEL_COLORS.length;
+		Game.currentLevel.goodGuyColour = GAME_LEVEL_COLORS[Game.currentLevel.count%colourComboCount];
+		Game.currentLevel.goodGuyFireColour = GAME_LEVEL_COLORS[Game.currentLevel.count%colourComboCount];
+	}
 
 	static splashRender = function() {
 
