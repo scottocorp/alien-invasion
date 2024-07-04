@@ -14,7 +14,9 @@ export enum GameState {
 export const GAME_LEVEL_BASE = {
 	count: 1,
 	goodGuySpeed: 3,
+  goodGuyFireSpeed: 15,
 	goodGuyColour: '255,0,0',
+	goodGuyFireColour: '255,0,0',
 	badGuyColour: '255,0,0',
 	badGuyCoordinateList: [
 		{ x: 100, y: 100 }, { x: 150, y: 100 }, { x: 200, y: 100 }, { x:250, y:100 }, { x:300, y:100 },

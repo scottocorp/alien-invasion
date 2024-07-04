@@ -3,7 +3,7 @@ import { GoodGuyStatus } from '../constants'
 // The GoodGuy class is used to represent the user, or "good guy" in the game.
 export class GoodGuy {
   
-  public _xPos: number;
+  private _xPos: number;
   private _vertices: any;
   private _status: GoodGuyStatus;
   private _alpha: number;
@@ -83,6 +83,22 @@ export class GoodGuy {
     // And once we're done, we just restore the context...
     this._context.restore();
   
+  }
+
+  public get xPos() {
+    return this._xPos;
+  }
+
+  public set xPos(xPos: number) {
+    this._xPos = xPos;
+  }
+
+  public get yPos() {
+    return this._yPos;
+  }
+
+  public set yPos(yPos: number) {
+    this._yPos = yPos;
   }
 
   public get status() {

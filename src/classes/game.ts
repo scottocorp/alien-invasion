@@ -8,6 +8,7 @@ import {
 import { Kibo } from '../utilities/kibo';
 import { Canvas } from './canvas';
 import { GoodGuy } from './goodguy';
+import { GoodGuyFire } from './goodguyfire';
 import { BadGuyField } from './badguyfield';
 import { TextButton } from './textbutton';
 
@@ -16,6 +17,7 @@ export class Game {
   static canvas: Canvas;
 	static currentLevel: any = null;
   static goodGuy: GoodGuy;
+	static goodGuyFire: GoodGuyFire;
 	static badGuyField: BadGuyField;
   static animationTimeoutId: number;
 	static advanceBadGuysIntervalId: number;
@@ -129,8 +131,10 @@ export class Game {
 		Game.canvas.element.width = Game.canvas.element.width;
 
 		if (Game.goodGuy) { Game.goodGuy.render(); }
+		if (Game.goodGuyFire) { Game.goodGuyFire.render(); }
 		if (Game.badGuyField) { Game.badGuyField.render(); }
 		Game.exitButton.render();
+		if (Game.playAgainButton) { Game.playAgainButton.render(); }
   }
 
   static levelInit = function() {
@@ -270,6 +274,7 @@ export class Game {
 		Game.gameState = null;
 
 		Game.goodGuy = null;
+		Game.goodGuyFire = null;
 		Game.gameHeader = null;
 		Game.introText = null;
 		Game.startButton = null;
@@ -294,5 +299,18 @@ export class Game {
     }).up('any', function() {
       Game.goodGuy.status = GoodGuyStatus.STATIONARY;
     });
+		Game.kibo.down('space', function () {
+
+			// Fire a missile.
+			if (!Game.goodGuyFire && Game.goodGuy) {
+						Game.goodGuyFire = new GoodGuyFire(
+							Game.canvas.ctx,
+							Game.goodGuy.xPos,
+							Game.goodGuy.yPos,
+							Game.currentLevel.goodGuyFireSpeed,
+							Game.currentLevel.goodGuyFireColour
+						);
+				}
+		});
   }
 }
