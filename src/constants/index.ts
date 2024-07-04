@@ -16,7 +16,15 @@ export const GAME_LEVEL_BASE = {
 	goodGuySpeed: 3,
 	goodGuyColour: '255,0,0',
 	badGuyColour: '255,0,0',
-};
+	badGuyCoordinateList: [
+		{ x: 100, y: 100 }, { x: 150, y: 100 }, { x: 200, y: 100 }, { x:250, y:100 }, { x:300, y:100 },
+		{ x: 100, y: 150 }, { x: 150, y: 150 }, { x: 200, y: 150 }, { x:250, y:150 }, { x:300, y:150 },
+		{ x: 100, y: 200 }, { x: 150, y: 200 }, { x: 200, y: 200 }, { x:250, y:200 }, { x:300, y:200 },
+		{ x: 100, y: 250 }, { x: 150, y: 250 }, { x: 200, y: 250 }, { x:250, y:250 }, { x:300, y:250 },
+		{ x: 100, y: 300 }, { x: 150, y: 300 }, { x: 200, y: 300 }, { x:250, y:300 }, { x:300, y:300 }
+		],
+  advanceBadGuysIntervalDuration: 2000
+}
 
 // We cycle through these colors to provide some variety to the levels.
 export const GAME_LEVEL_COLORS = ['255,85,170', '255,0,0', '0,170,255'];
@@ -28,6 +36,13 @@ export enum GoodGuyStatus {
   STATIONARY = 1,
   LEFT = 2,
   RIGHT = 3
+}
+
+// BadGuyStatus contains all the possible bad guy statuses.  
+export enum BadGuyStatus {
+  DESTROYED = -1,
+  TRANSITION = 0,
+  ALIVE = 1
 }
 
 // TextButtonStatus contains all the possible TextButton statuses.

@@ -8,6 +8,7 @@ import {
 import { Kibo } from '../utilities/kibo';
 import { Canvas } from './canvas';
 import { GoodGuy } from './goodguy';
+import { BadGuyField } from './badguyfield';
 import { TextButton } from './textbutton';
 
 export class Game {
@@ -15,13 +16,16 @@ export class Game {
   static canvas: Canvas;
 	static currentLevel: any = null;
   static goodGuy: GoodGuy;
+	static badGuyField: BadGuyField;
   static animationTimeoutId: number;
+	static advanceBadGuysIntervalId: number;
 	static gameState: GameState;
 	static functionToAnimate: any;
 	static startButton: TextButton;
 	static gameHeader: TextButton;
 	static introText: TextButton;
 	static exitButton: TextButton;
+	static playAgainButton: TextButton;
 
   static init = function () {
     try {
@@ -68,6 +72,42 @@ export class Game {
 				
 				break;
 				
+			case GameState.END_OF_GAME:
+
+				if (!Game.animationTimeoutId) {
+					// Multiple bad guys may trigger END_OF_GAME. Only handle the first.
+					break;
+				}
+			
+				// The bad guys have advanced to the good guy. Game over!
+				console.log('END_OF_GAME');
+			
+				// Remove remnants of any previous game states.
+				clearInterval(Game.advanceBadGuysIntervalId);
+				Game.goodGuy = null;
+				
+				// Create appropriate canvas objects. In this case, a "play again" button.
+				Game.playAgainButton = new TextButton(
+					Game.canvas.ctx,
+					['Play again?'],
+					120, 
+					205, 
+					160, 
+					35,
+					"255,255,255",
+					"20pt Arial",
+					true,
+					// The following paramter is the function be be invoked when the button is clicked.
+					function(){
+						Game.gameStateHandler(GameState.NEW_GAME);
+					}
+				);
+
+				cancelAnimationFrame(Game.animationTimeoutId);
+				Game.animationTimeoutId = null;
+
+				break;
+
 			default:			  
 		}		
 		
@@ -83,15 +123,20 @@ export class Game {
 	}
 
   static levelRender = function() {
+		// This method will be repeatedly called to animate the appropriate objects on the canvas.
+
 		// the following line of code clears the canvas...
 		Game.canvas.element.width = Game.canvas.element.width;
 
-    Game.goodGuy.render();
+		if (Game.goodGuy) { Game.goodGuy.render(); }
+		if (Game.badGuyField) { Game.badGuyField.render(); }
 		Game.exitButton.render();
   }
 
   static levelInit = function() {
 
+		// This method creates the appropriate canvas objects. 
+			
 		Game.goodGuy = new GoodGuy(
 			Game.canvas.ctx, 
 			15,                                 /* goodGuy's horizontal range of movement - starting point */
@@ -99,6 +144,11 @@ export class Game {
 			Game.canvas.element.height - 22,    /* y position of goodGuy */
 			Game.currentLevel.goodGuySpeed,  		/* goodGuy Speed */	
 			Game.currentLevel.goodGuyColour  		/* goodGuy Colour */
+		);
+
+		Game.badGuyField = new BadGuyField(
+			Game.canvas.ctx, 
+			Game.currentLevel
 		);
 
 		Game.exitButton = new TextButton(
@@ -115,6 +165,11 @@ export class Game {
 				Game.gameStateHandler(GameState.SPLASH);
 			}
 		);
+
+		Game.advanceBadGuysIntervalId = window.setInterval(
+			Game.badGuyField.advanceBadGuys.bind(Game.badGuyField),
+			Game.currentLevel.advanceBadGuysIntervalDuration
+		);
 		
 		Game.functionToAnimate = Game.levelRender;
 
@@ -128,15 +183,19 @@ export class Game {
 			// We initialize currentLevel to the first level by cloning gameLevelBase.
 			Game.currentLevel = JSON.parse(JSON.stringify(GAME_LEVEL_BASE))
 		} else {			
-			// But as the game progresses, the difficulty increases.
-
 			Game.currentLevel.count++;
+
+			// But as the game progresses, the difficulty increases.
+			// For example, the bad guys start to close in!
+			for (let i = 0; i < Game.currentLevel.badGuyCoordinateList.length; i++) {
+				Game.currentLevel.badGuyCoordinateList[i].y += 20;
+			}
 		}
 
 		// Also, we cycle through all the different colour combinations we created, to add some variety.
 		var colourComboCount = GAME_LEVEL_COLORS.length;
 		Game.currentLevel.goodGuyColour = GAME_LEVEL_COLORS[Game.currentLevel.count%colourComboCount];
-		Game.currentLevel.goodGuyFireColour = GAME_LEVEL_COLORS[Game.currentLevel.count%colourComboCount];
+		Game.currentLevel.badGuyColour = GAME_LEVEL_COLORS[Game.currentLevel.count%colourComboCount];
 	}
 
 	static splashRender = function() {
@@ -206,6 +265,7 @@ export class Game {
 		// Here we clear the canvas of all objects and timers.
 	
 		cancelAnimationFrame(Game.animationTimeoutId);
+		clearInterval(Game.advanceBadGuysIntervalId);
 
 		Game.gameState = null;
 
@@ -214,6 +274,13 @@ export class Game {
 		Game.introText = null;
 		Game.startButton = null;
 		Game.exitButton = null;
+		Game.playAgainButton = null;
+
+		// These objects contain sub-objects. We need to recursively remove these sub-objects as well.
+		if (Game.badGuyField) {
+				Game.badGuyField.clearContents();
+				Game.badGuyField = null;
+		}
 	}
 
   static eventSetup = function () {

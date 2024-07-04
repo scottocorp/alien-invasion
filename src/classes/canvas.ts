@@ -47,6 +47,8 @@ export class Canvas {
       Game.startButton.clickAction();
     if (Game.exitButton && Game.exitButton.areWeInside(x1, y1))
       Game.exitButton.clickAction();
+    if (Game.playAgainButton && Game.playAgainButton.areWeInside(x1, y1))
+      Game.playAgainButton.clickAction();
     }
 
   private mouseMoveHandler = function (e:any) {
@@ -69,5 +71,6 @@ export class Canvas {
     // Whichever button is moused-over will have it's text temporarily highlighted.
     if (Game.startButton) { Game.startButton.areWeInside(x1, y1) ? Game.startButton.alpha = 1.0 : Game.startButton.alpha = 0.8; }
     if (Game.exitButton) { Game.exitButton.areWeInside(x1, y1) ? Game.exitButton.alpha = 1.0 : Game.exitButton.alpha = 0.8; }
+    if (Game.playAgainButton) { Game.playAgainButton.areWeInside(x1, y1) ? Game.playAgainButton.alpha = 1.0  : Game.playAgainButton.alpha = 0.8; }
   };
 }
