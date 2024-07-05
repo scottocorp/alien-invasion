@@ -63,4 +63,12 @@ export class BadGuyField {
       }
 		}
 	}
+
+  public get badGuysLeft() {
+    return this._badGuysLeft;
+  }
+
+  public set badGuysLeft(badGuysLeft: number) {
+    this._badGuysLeft = badGuysLeft;
+  }
 }

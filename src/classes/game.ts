@@ -21,12 +21,14 @@ export class Game {
 	static badGuyField: BadGuyField;
   static animationTimeoutId: number;
 	static advanceBadGuysIntervalId: number;
+	static endOfLevelIntervalId: number;
 	static gameState: GameState;
 	static functionToAnimate: any;
 	static startButton: TextButton;
 	static gameHeader: TextButton;
 	static introText: TextButton;
 	static exitButton: TextButton;
+	static endOfLevelText: TextButton;
 	static playAgainButton: TextButton;
 
   static init = function () {
@@ -74,6 +76,45 @@ export class Game {
 				
 				break;
 				
+				case GameState.NEW_LEVEL:
+
+				// Here we set up a new level.
+				console.log('NEW_LEVEL');
+				
+				Game.clearCanvas();
+				Game.getNextLevel();
+				Game.levelInit();
+				
+				break;
+				
+			case GameState.END_OF_LEVEL:
+			
+				// The goodGuy destroyed all the bad guys. This is a temporary state just to inform the player.
+				// We'll shortly advance to the NEW_LEVEL game state.
+				console.log('END_OF_LEVEL');
+			
+				// Remove remnants of any of the previous game states...
+				clearInterval(Game.advanceBadGuysIntervalId);
+				
+				// Create appropriate canvas objects...
+				Game.endOfLevelText = new TextButton(
+					Game.canvas.ctx,
+					["Next Level"],
+					130, 
+					205, 
+					140, 
+					35,
+					"255,255,255",
+					"20pt Arial",
+					false,
+					null
+				);
+				
+				// Set a timeout. Once expired, we'll advance to the NEW_LEVEL game state.
+				Game.endOfLevelIntervalId = window.setTimeout(Game.gameStateHandler, 2000, GameState.NEW_LEVEL);
+				
+				break;
+
 			case GameState.END_OF_GAME:
 
 				if (!Game.animationTimeoutId) {
@@ -86,6 +127,7 @@ export class Game {
 			
 				// Remove remnants of any previous game states.
 				clearInterval(Game.advanceBadGuysIntervalId);
+				clearInterval(Game.endOfLevelIntervalId);
 				Game.goodGuy = null;
 				
 				// Create appropriate canvas objects. In this case, a "play again" button.
@@ -134,6 +176,7 @@ export class Game {
 		if (Game.goodGuyFire) { Game.goodGuyFire.render(); }
 		if (Game.badGuyField) { Game.badGuyField.render(); }
 		Game.exitButton.render();
+		if (Game.endOfLevelText) { Game.endOfLevelText.render(); }
 		if (Game.playAgainButton) { Game.playAgainButton.render(); }
   }
 
@@ -199,6 +242,7 @@ export class Game {
 		// Also, we cycle through all the different colour combinations we created, to add some variety.
 		var colourComboCount = GAME_LEVEL_COLORS.length;
 		Game.currentLevel.goodGuyColour = GAME_LEVEL_COLORS[Game.currentLevel.count%colourComboCount];
+		Game.currentLevel.goodGuyFireColour = GAME_LEVEL_COLORS[Game.currentLevel.count%colourComboCount];
 		Game.currentLevel.badGuyColour = GAME_LEVEL_COLORS[Game.currentLevel.count%colourComboCount];
 	}
 
@@ -270,6 +314,7 @@ export class Game {
 	
 		cancelAnimationFrame(Game.animationTimeoutId);
 		clearInterval(Game.advanceBadGuysIntervalId);
+		clearInterval(Game.endOfLevelIntervalId);
 
 		Game.gameState = null;
 
@@ -279,6 +324,7 @@ export class Game {
 		Game.introText = null;
 		Game.startButton = null;
 		Game.exitButton = null;
+		Game.endOfLevelText = null;
 		Game.playAgainButton = null;
 
 		// These objects contain sub-objects. We need to recursively remove these sub-objects as well.

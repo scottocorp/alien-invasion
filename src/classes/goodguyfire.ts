@@ -49,6 +49,30 @@ export class GoodGuyFire {
     this._context.restore();
   }
 
+  public get radius() {
+    return this._radius;
+  }
+
+  public set radius(radius: number) {
+    this._radius = radius;
+  }
+
+  public get xPos() {
+    return this._xPos;
+  }
+
+  public set xPos(xPos: number) {
+    this._xPos = xPos;
+  }
+
+  public get yPos() {
+    return this._yPos;
+  }
+
+  public set yPos(yPos: number) {
+    this._yPos = yPos;
+  }
+
   public get alpha() {
     return this._alpha;
   }
