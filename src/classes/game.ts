@@ -37,7 +37,7 @@ export class Game {
       Game.canvas = new Canvas('canvas');
 
 			// Set up keyboard event handlers:
-      Game.eventSetup();
+			Game.eventSetup();
 
 			// We start by showing the splash screen:
 			Game.gameStateHandler(GameState.SPLASH);
@@ -184,7 +184,7 @@ export class Game {
 
 		// This method creates the appropriate canvas objects. 
 			
-		Game.goodGuy = new GoodGuy(
+			Game.goodGuy = new GoodGuy(
 			Game.canvas.ctx, 
 			15,                                 /* goodGuy's horizontal range of movement - starting point */
 			Game.canvas.element.width - 10,     /* goodGuy's horizontal range of movement - width */
@@ -311,7 +311,7 @@ export class Game {
 
 	static clearCanvas = function() {
 		// Here we clear the canvas of all objects and timers.
-	
+
 		cancelAnimationFrame(Game.animationTimeoutId);
 		clearInterval(Game.advanceBadGuysIntervalId);
 		clearInterval(Game.endOfLevelIntervalId);
@@ -336,27 +336,35 @@ export class Game {
 
   static eventSetup = function () {
     Game.kibo = new Kibo();
-    Game.kibo.down(['left', 'right'], () => {
-
-      if (Game.goodGuy) {
-        const status: keyof typeof GoodGuyStatus = Game.kibo.lastKey().toUpperCase();
-        Game.goodGuy.status = GoodGuyStatus[status];
-      }
-    }).up('any', function() {
-      Game.goodGuy.status = GoodGuyStatus.STATIONARY;
+    Game.kibo
+		.down('left', () => {
+			if (!!Game.goodGuy) {
+      	Game.goodGuy.status = GoodGuyStatus.LEFT;
+			}
+    })
+		.down('right', () => {
+			if (!!Game.goodGuy) {
+				Game.goodGuy.status = GoodGuyStatus.RIGHT;
+			}
+    })
+		.up('any', function() {
+			if (!!Game.goodGuy) {
+				Game.goodGuy.status = GoodGuyStatus.STATIONARY;
+			}
     });
 		Game.kibo.down('space', function () {
-
 			// Fire a missile.
-			if (!Game.goodGuyFire && Game.goodGuy) {
-						Game.goodGuyFire = new GoodGuyFire(
-							Game.canvas.ctx,
-							Game.goodGuy.xPos,
-							Game.goodGuy.yPos,
-							Game.currentLevel.goodGuyFireSpeed,
-							Game.currentLevel.goodGuyFireColour
-						);
+      if (Game.goodGuy) {
+				if (!Game.goodGuyFire && Game.goodGuy) {
+					Game.goodGuyFire = new GoodGuyFire(
+						Game.canvas.ctx,
+						Game.goodGuy.xPos,
+						Game.goodGuy.yPos,
+						Game.currentLevel.goodGuyFireSpeed,
+						Game.currentLevel.goodGuyFireColour
+					);
 				}
+			}
 		});
   }
 }
