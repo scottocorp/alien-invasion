@@ -70,19 +70,20 @@ export class TextButton {
   public increment = function () {
 
     // Increment by one the numeric value stored within the text field.
+    // Note that increment & decrement below will only be applied to Game.scoreText & Game.livesText where the content lives in this._text[0]
     
-    let textToInt = parseInt(this._text);
+    let textToInt = parseInt(this._text[0]);
     textToInt++;
-    this._text = textToInt.toString();
+    this._text[0] = textToInt.toString();
   }
 
   public decrement = function () {
 
     // Decrement by one the numeric value stored within the text field.
     
-    let textToInt = parseInt(this._text);
+    let textToInt = parseInt(this._text[0]);
     textToInt--;
-    this._text = textToInt.toString();
+    this._text[0] = textToInt.toString();
   }
 
   public get alpha() {

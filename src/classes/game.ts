@@ -30,6 +30,8 @@ export class Game {
 	static exitButton: TextButton;
 	static endOfLevelText: TextButton;
 	static playAgainButton: TextButton;
+	static scoreText: TextButton;
+	static livesText: TextButton;
 
   static init = function () {
     try {
@@ -72,6 +74,7 @@ export class Game {
 				Game.currentLevel = null;
 				Game.clearCanvas();
 				Game.getNextLevel();
+				Game.scoreInit();
 				Game.levelInit();
 				
 				break;
@@ -176,6 +179,8 @@ export class Game {
 		if (Game.goodGuyFire) { Game.goodGuyFire.render(); }
 		if (Game.badGuyField) { Game.badGuyField.render(); }
 		Game.exitButton.render();
+		Game.scoreText.render();
+		Game.livesText.render();
 		if (Game.endOfLevelText) { Game.endOfLevelText.render(); }
 		if (Game.playAgainButton) { Game.playAgainButton.render(); }
   }
@@ -223,6 +228,37 @@ export class Game {
 		Game.animationLoop();
 	}
 
+	static scoreInit = function() {
+			
+		// Here we initialise the two objects on the canvas that hold the player's score and number of lives left.
+		
+		Game.scoreText = new TextButton(
+			Game.canvas.ctx,
+			["0"],
+			10, 
+			10, 
+			50, 
+			35,
+			"255,255,255",
+			"20pt Arial",
+			false,
+			null
+		);
+							
+		Game.livesText = new TextButton(
+			Game.canvas.ctx,
+			["3"],
+			340, 
+			10, 
+			50, 
+			35,
+			"255,255,255",
+			"20pt Arial",
+			false,
+			null
+		);
+	}
+	
 	static getNextLevel = function() {	
 		// Here we set up parameters for the current level. These parameters also determine the difficulty of the level. 
 		

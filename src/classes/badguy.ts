@@ -76,6 +76,9 @@ export class BadGuy {
 
         // Remove the goodGuy fire from the canvas.
         Game.goodGuyFire = null;
+
+        // Increment the score
+        Game.scoreText.increment();
       }
     }
 
