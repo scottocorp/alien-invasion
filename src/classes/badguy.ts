@@ -66,11 +66,11 @@ export class BadGuy {
           5,
           50,
           {transitionEffect: function(frame: number, time: any) {
-            currentBadGuy.status = BadGuyStatus.TRANSITION
-            currentBadGuy.alpha = frame % 2;
+            currentBadGuy._status = BadGuyStatus.TRANSITION
+            currentBadGuy._alpha = frame % 2;
           }},
           {afterTransition: function(frame: number, time:any) {
-            currentBadGuy.status = BadGuyStatus.DESTROYED
+            currentBadGuy._status = BadGuyStatus.DESTROYED
           }}
         );
 

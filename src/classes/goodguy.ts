@@ -1,4 +1,10 @@
 import { GoodGuyStatus } from '../constants'
+import { Game } from './game';
+import { GameState } from '../constants'
+import { 
+  hitTest2,
+  animateCanvasObject
+} from '../utilities';
 
 // The GoodGuy class is used to represent the user, or "good guy" in the game.
 export class GoodGuy {
@@ -31,6 +37,53 @@ export class GoodGuy {
 
   public render = function () {
 
+    if (this._status==GoodGuyStatus.DESTROYED) {
+      // By this stage the goodGuy has been shot, and after a period of TRANSITION (where she flickers) her status has been changed to DESTROYED.
+      
+      // So first we decremnet the number of live she has left.		
+      Game.livesText.decrement();
+		
+      if (parseInt(Game.livesText.text[0])==0) {
+        // If all the lives are used up, we've reached the end of the game, and so we need to change the game state to END_OF_GAME.
+        Game.gameStateHandler(GameState.END_OF_GAME);
+      } else {
+        // Otherwise we only need to change the game state to PLAYER_DESTROYED.
+        Game.gameStateHandler(GameState.PLAYER_DESTROYED);
+      }
+      return;
+    }
+    
+    // We iterate through all the bad guy's to see if any fired a missile that hit the goodGuy.	
+    for (let i = 0; i < Game.badGuyField.numBadGuys; i++) {
+  
+      if (Game.badGuyField.badGuysFire[i]) {
+
+        if (hitTest2(this, Game.badGuyField.badGuysFire[i])) {
+
+          //YOU'VE BEEN HIT!
+          
+          // goodGuy's been hit, but before we remove her, we make her "flicker" and set her status to TRANSITION...
+          // After x flicker cycles of y milliseconds each (where x and y are the two numbers below) ...
+          // We change her status to DESTROYED....
+          // So that, in the next animation frame, she'll be removed from the canvas by the code above.
+          animateCanvasObject(
+            10,
+            50,
+            {transitionEffect: function(frame: number, time:number) {
+              Game.goodGuy._status = GoodGuyStatus.TRANSITION;
+              Game.goodGuy._alpha = frame % 2;
+            }},
+            {afterTransition: function(frame: number, time:number) {
+              Game.goodGuy._status = GoodGuyStatus.DESTROYED;
+            }}
+          );
+          
+          // Remove the bad guy fire from the canvas.
+          Game.badGuyField.removeBadGuyFire(i)
+        }
+      }
+    }
+    
     if (this._status == GoodGuyStatus.LEFT) {
 		  // The user is holding down the left arrow key, so we move goodGuy left.
       this._xPos -= this._goodGuySpeed;
@@ -83,6 +136,14 @@ export class GoodGuy {
     // And once we're done, we just restore the context...
     this._context.restore();
   
+  }
+
+  public get vertices() {
+    return this._vertices;
+  }
+
+  public set vertices(vertices: any) {
+    this._vertices = vertices;
   }
 
   public get xPos() {

@@ -86,6 +86,14 @@ export class TextButton {
     this._text[0] = textToInt.toString();
   }
 
+  public get text() {
+    return this._text;
+  }
+
+  public set text(text: string[]) {
+    this._text = text;
+  }
+
   public get alpha() {
     return this._alpha;
   }

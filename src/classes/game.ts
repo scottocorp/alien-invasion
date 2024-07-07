@@ -20,7 +20,9 @@ export class Game {
 	static goodGuyFire: GoodGuyFire;
 	static badGuyField: BadGuyField;
   static animationTimeoutId: number;
+	static badGuyFireIntervalId: number;
 	static advanceBadGuysIntervalId: number;
+	static playerDestroyedIntervalId: number;
 	static endOfLevelIntervalId: number;
 	static gameState: GameState;
 	static functionToAnimate: any;
@@ -32,6 +34,7 @@ export class Game {
 	static playAgainButton: TextButton;
 	static scoreText: TextButton;
 	static livesText: TextButton;
+	static playerDestroyedText: TextButton;
 
   static init = function () {
     try {
@@ -90,6 +93,78 @@ export class Game {
 				
 				break;
 				
+			case GameState.LEVEL_RESUME:
+			
+				// Here we resume play after the goodGuy was destroyed by enemy fire.
+				console.log('LEVEL_RESUME');
+				
+				if (Game.badGuyField.badGuysLeft==0){
+					// This is in case the player was destroyed JUST AFTER the last bad guy. 
+					if (parseInt(Game.livesText.text[0])==0) {
+						Game.gameStateHandler(GameState.END_OF_GAME);
+					} else {
+						Game.gameStateHandler(GameState.END_OF_LEVEL);
+					}
+					return;
+				}
+				
+				// Remove remnants of any previous game states...
+				Game.playerDestroyedText = null;
+
+				// Create appropriate canvas objects...
+				Game.goodGuy = new GoodGuy(
+					Game.canvas.ctx, 
+					15, 															/* goodGuy's horizontal range of movement - starting point */
+					Game.canvas.element.width - 10, 	/* goodGuy's horizontal range of movement - width */
+					Game.canvas.element.height - 22, 	/* y position of goodGuy */
+					Game.currentLevel.goodGuySpeed, 	/* goodGuy Speed */
+					Game.currentLevel.goodGuyColour 	/* goodGuy Colour */
+				);
+				
+				// Resume badGuy missile bombardment and advancement... 
+				Game.badGuyFireIntervalId = window.setInterval(
+					Game.badGuyField.launchBadGuyFire.bind(Game.badGuyField), 
+					Game.currentLevel.badGuyFireIntervalDuration
+				);
+				Game.advanceBadGuysIntervalId = window.setInterval(
+					Game.badGuyField.advanceBadGuys.bind(Game.badGuyField),
+					Game.currentLevel.advanceBadGuysIntervalDuration
+				);
+				
+				break;		
+				
+			case GameState.PLAYER_DESTROYED:
+			
+				// The goodGuy has just been destroyed by enemy fire. This is a temporary state just to inform the player.
+				// We'll shortly advance to the LEVEL_RESUME game state
+				console.log('PLAYER_DESTROYED');
+			
+				// Remove remnants any of previous game states...
+				clearInterval(Game.badGuyFireIntervalId);
+				clearInterval(Game.advanceBadGuysIntervalId);
+				clearInterval(Game.endOfLevelIntervalId);
+				Game.goodGuy = null;
+				Game.endOfLevelText = null;
+				
+				// Create appropriate canvas objects...
+				Game.playerDestroyedText = new TextButton(
+					Game.canvas.ctx,
+					['Player Destroyed'],
+					90, 
+					205, 
+					220, 
+					35,
+					'255,255,255',
+					'20pt Arial',
+					false,
+					null
+				);
+
+				// Set a timeout. Once expired, we'll advance to the LEVEL_RESUME game state
+				Game.endOfLevelIntervalId = window.setTimeout(Game.gameStateHandler, 2000, GameState.LEVEL_RESUME);
+				
+				break;
+				
 			case GameState.END_OF_LEVEL:
 			
 				// The goodGuy destroyed all the bad guys. This is a temporary state just to inform the player.
@@ -97,18 +172,21 @@ export class Game {
 				console.log('END_OF_LEVEL');
 			
 				// Remove remnants of any of the previous game states...
+				clearInterval(Game.badGuyFireIntervalId);
 				clearInterval(Game.advanceBadGuysIntervalId);
+				clearInterval(Game.playerDestroyedIntervalId);
+				Game.playerDestroyedText = null;
 				
 				// Create appropriate canvas objects...
 				Game.endOfLevelText = new TextButton(
 					Game.canvas.ctx,
-					["Next Level"],
+					['Next Level'],
 					130, 
 					205, 
 					140, 
 					35,
-					"255,255,255",
-					"20pt Arial",
+					'255,255,255',
+					'20pt Arial',
 					false,
 					null
 				);
@@ -129,8 +207,10 @@ export class Game {
 				console.log('END_OF_GAME');
 			
 				// Remove remnants of any previous game states.
+				clearInterval(Game.badGuyFireIntervalId);
 				clearInterval(Game.advanceBadGuysIntervalId);
 				clearInterval(Game.endOfLevelIntervalId);
+				clearInterval(Game.playerDestroyedIntervalId);				
 				Game.goodGuy = null;
 				
 				// Create appropriate canvas objects. In this case, a "play again" button.
@@ -141,8 +221,8 @@ export class Game {
 					205, 
 					160, 
 					35,
-					"255,255,255",
-					"20pt Arial",
+					'255,255,255',
+					'20pt Arial',
 					true,
 					// The following paramter is the function be be invoked when the button is clicked.
 					function(){
@@ -181,6 +261,7 @@ export class Game {
 		Game.exitButton.render();
 		Game.scoreText.render();
 		Game.livesText.render();
+		if (Game.playerDestroyedText) { Game.playerDestroyedText.render(); }
 		if (Game.endOfLevelText) { Game.endOfLevelText.render(); }
 		if (Game.playAgainButton) { Game.playAgainButton.render(); }
   }
@@ -189,7 +270,7 @@ export class Game {
 
 		// This method creates the appropriate canvas objects. 
 			
-			Game.goodGuy = new GoodGuy(
+		Game.goodGuy = new GoodGuy(
 			Game.canvas.ctx, 
 			15,                                 /* goodGuy's horizontal range of movement - starting point */
 			Game.canvas.element.width - 10,     /* goodGuy's horizontal range of movement - width */
@@ -223,6 +304,11 @@ export class Game {
 			Game.currentLevel.advanceBadGuysIntervalDuration
 		);
 		
+		Game.badGuyFireIntervalId = window.setInterval(
+			Game.badGuyField.launchBadGuyFire.bind(Game.badGuyField),
+			Game.currentLevel.badGuyFireIntervalDuration
+		);
+		
 		Game.functionToAnimate = Game.levelRender;
 
 		Game.animationLoop();
@@ -234,26 +320,26 @@ export class Game {
 		
 		Game.scoreText = new TextButton(
 			Game.canvas.ctx,
-			["0"],
+			['0'],
 			10, 
 			10, 
 			50, 
 			35,
-			"255,255,255",
-			"20pt Arial",
+			'255,255,255',
+			'20pt Arial',
 			false,
 			null
 		);
 							
 		Game.livesText = new TextButton(
 			Game.canvas.ctx,
-			["3"],
+			['3'],
 			340, 
 			10, 
 			50, 
 			35,
-			"255,255,255",
-			"20pt Arial",
+			'255,255,255',
+			'20pt Arial',
 			false,
 			null
 		);
@@ -273,6 +359,9 @@ export class Game {
 			for (let i = 0; i < Game.currentLevel.badGuyCoordinateList.length; i++) {
 				Game.currentLevel.badGuyCoordinateList[i].y += 20;
 			}
+
+			// ...and the bombs dropped by the bad guys become faster...
+			Game.currentLevel.badGuyFireSpeed += 0.25;
 		}
 
 		// Also, we cycle through all the different colour combinations we created, to add some variety.
@@ -280,6 +369,7 @@ export class Game {
 		Game.currentLevel.goodGuyColour = GAME_LEVEL_COLORS[Game.currentLevel.count%colourComboCount];
 		Game.currentLevel.goodGuyFireColour = GAME_LEVEL_COLORS[Game.currentLevel.count%colourComboCount];
 		Game.currentLevel.badGuyColour = GAME_LEVEL_COLORS[Game.currentLevel.count%colourComboCount];
+		Game.currentLevel.badGuyFireColour = GAME_LEVEL_COLORS[Game.currentLevel.count%colourComboCount];
 	}
 
 	static splashRender = function() {
@@ -349,11 +439,12 @@ export class Game {
 		// Here we clear the canvas of all objects and timers.
 
 		cancelAnimationFrame(Game.animationTimeoutId);
+		clearInterval(Game.badGuyFireIntervalId);
 		clearInterval(Game.advanceBadGuysIntervalId);
 		clearInterval(Game.endOfLevelIntervalId);
+		clearInterval(Game.playerDestroyedIntervalId);
 
 		Game.gameState = null;
-
 		Game.goodGuy = null;
 		Game.goodGuyFire = null;
 		Game.gameHeader = null;
@@ -362,6 +453,8 @@ export class Game {
 		Game.exitButton = null;
 		Game.endOfLevelText = null;
 		Game.playAgainButton = null;
+		Game.functionToAnimate = null;
+		Game.playerDestroyedText = null;
 
 		// These objects contain sub-objects. We need to recursively remove these sub-objects as well.
 		if (Game.badGuyField) {

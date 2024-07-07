@@ -17,7 +17,9 @@ export const GAME_LEVEL_BASE = {
   goodGuyFireSpeed: 15,
 	goodGuyColour: '255,0,0',
 	goodGuyFireColour: '255,0,0',
+  badGuyFireSpeed: 4,
 	badGuyColour: '255,0,0',
+	badGuyFireColour: '255,0,0',
 	badGuyCoordinateList: [
 		{ x: 100, y: 100 }, { x: 150, y: 100 }, { x: 200, y: 100 }, { x:250, y:100 }, { x:300, y:100 },
 		{ x: 100, y: 150 }, { x: 150, y: 150 }, { x: 200, y: 150 }, { x:250, y:150 }, { x:300, y:150 },
@@ -25,7 +27,8 @@ export const GAME_LEVEL_BASE = {
 		{ x: 100, y: 250 }, { x: 150, y: 250 }, { x: 200, y: 250 }, { x:250, y:250 }, { x:300, y:250 },
 		{ x: 100, y: 300 }, { x: 150, y: 300 }, { x: 200, y: 300 }, { x:250, y:300 }, { x:300, y:300 }
 		],
-  advanceBadGuysIntervalDuration: 2000
+  advanceBadGuysIntervalDuration: 2000,
+  badGuyFireIntervalDuration: 2000,
 }
 
 // We cycle through these colors to provide some variety to the levels.
