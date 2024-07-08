@@ -5,6 +5,8 @@ import {
   hitTest2,
   animateCanvasObject
 } from '../utilities';
+import fireAudio from '../assets/fire_new.wav';
+import explosionAudio from '../assets/explosion_new.wav';
 
 // The GoodGuy class is used to represent the user, or "good guy" in the game.
 export class GoodGuy {
@@ -13,6 +15,8 @@ export class GoodGuy {
   private _vertices: any;
   private _status: GoodGuyStatus;
   private _alpha: number;
+  private _fireAudio: any;
+  private _explosionAudio: any;
 
   constructor(
     private _context: any,
@@ -31,6 +35,9 @@ export class GoodGuy {
 
     this._status = GoodGuyStatus.STATIONARY;
     this._alpha = 1.0;
+
+    this._fireAudio = new Audio(fireAudio);
+    this._explosionAudio = new Audio(explosionAudio);
 
     this.create();
   }
@@ -78,6 +85,9 @@ export class GoodGuy {
             }}
           );
           
+          // Make an explosion sound.
+          this.explosion();
+
           // Remove the bad guy fire from the canvas.
           Game.badGuyField.removeBadGuyFire(i)
         }
@@ -136,6 +146,20 @@ export class GoodGuy {
     // And once we're done, we just restore the context...
     this._context.restore();
   
+  }
+
+  public fire() {
+
+    this._fireAudio.pause();
+    this._fireAudio.currentTime = 0;
+    this._fireAudio.play();
+  }
+
+  public explosion() {
+
+    this._explosionAudio.pause();
+    this._explosionAudio.currentTime = 0;
+    this._explosionAudio.play();
   }
 
   public get vertices() {

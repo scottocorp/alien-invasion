@@ -274,8 +274,8 @@ export class Game {
 
   static levelInit = function() {
 
-		// This method creates the appropriate canvas objects. 
-			
+		// This method creates the appropriate canvas objects.
+
 		Game.background = new ParticleField(
 			10, 																/* number of particles in the field */
 			Game.canvas.ctx, 
@@ -531,6 +531,7 @@ export class Game {
 						Game.currentLevel.goodGuyFireSpeed,
 						Game.currentLevel.goodGuyFireColor
 					);
+					Game.goodGuy.fire();
 				}
 			}
 		});

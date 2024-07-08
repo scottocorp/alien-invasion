@@ -8,13 +8,15 @@ import {
   animateCanvasObject
 } from '../utilities';
 import { Game } from './game';
+import explosionAudio from '../assets/explosion_new.wav';
 
 // BadGuy is used to represent a bad guy on the canvas.
 export class BadGuy {
   private _radius: number;
   private _status: BadGuyStatus;
   private _alpha: number;
-  
+  private _explosionAudio: any;
+
   constructor(
     private _context: any,
     private _xPos: number,
@@ -26,6 +28,8 @@ export class BadGuy {
     this._radius = 10;
     this._status = BadGuyStatus.ALIVE;
     this._alpha = 1.0;
+
+    this._explosionAudio = new Audio(explosionAudio);
 
     this.create();
   }
@@ -74,6 +78,9 @@ export class BadGuy {
           }}
         );
 
+        // Make an explosion sound.
+        this.explosion();
+
         // Remove the goodGuy fire from the canvas.
         Game.goodGuyFire = null;
 
@@ -103,6 +110,13 @@ export class BadGuy {
     // And once we're done, we just restore the context...
     this._context.restore();
   };
+
+  private explosion() {
+
+    this._explosionAudio.pause();
+    this._explosionAudio.currentTime = 0;
+    this._explosionAudio.play();
+  }
 
   public get radius() {
     return this._radius;
