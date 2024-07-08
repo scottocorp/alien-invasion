@@ -3,7 +3,10 @@ import {
 	GameState,
 	GoodGuyStatus,
 	GAME_LEVEL_BASE,
-	GAME_LEVEL_COLORS
+	GAME_LEVEL_COLORS,
+	GAME_LEVEL_BACKGROUND_COLORS,
+	CANVAS_WIDTH,
+	CANVAS_HEIGHT
 } from '../constants'
 import { Kibo } from '../utilities/kibo';
 import { Canvas } from './canvas';
@@ -11,9 +14,11 @@ import { GoodGuy } from './goodguy';
 import { GoodGuyFire } from './goodguyfire';
 import { BadGuyField } from './badguyfield';
 import { TextButton } from './textbutton';
+import { ParticleField } from './particlefield';
 
 export class Game {
   static kibo: any;
+	static background: ParticleField;
   static canvas: Canvas;
 	static currentLevel: any = null;
   static goodGuy: GoodGuy;
@@ -255,6 +260,7 @@ export class Game {
 		// the following line of code clears the canvas...
 		Game.canvas.element.width = Game.canvas.element.width;
 
+		Game.background.render();
 		if (Game.goodGuy) { Game.goodGuy.render(); }
 		if (Game.goodGuyFire) { Game.goodGuyFire.render(); }
 		if (Game.badGuyField) { Game.badGuyField.render(); }
@@ -270,6 +276,27 @@ export class Game {
 
 		// This method creates the appropriate canvas objects. 
 			
+		Game.background = new ParticleField(
+			10, 																/* number of particles in the field */
+			Game.canvas.ctx, 
+			0,																	/* particlefield x pos */
+			0,																	/* particlefield y pos */
+			CANVAS_WIDTH,												/* particlefield width */
+			CANVAS_HEIGHT,											/* particlefield height */
+			1,																	/* radius of each particle: lower-bound */
+			1,																	/* radius of each particle: upper-bound */
+			0,																	/* x speed of each particle: lower-bound */
+			0,																	/* x speed of each particle: upper-bound */
+			1,																	/* y speed of each particle: lower-bound */
+			3,																	/* y speed of each particle: upper-bound */
+			Game.currentLevel.redLowerBound,		/* "red-ness" of each particle: lower-bound */
+			Game.currentLevel.redUpperBound,		/* "red-ness" of each particle: upper-bound */
+			Game.currentLevel.greenLowerBound,	/* "green-ness" of each particle: lower-bound */
+			Game.currentLevel.greenUpperBound,	/* "green-ness" of each particle: upper-bound */
+			Game.currentLevel.blueLowerBound,		/* "blue-ness" of each particle: lower-bound */
+			Game.currentLevel.blueUpperBound		/* "blue-ness" of each particle: upper-bound */
+		);
+
 		Game.goodGuy = new GoodGuy(
 			Game.canvas.ctx, 
 			15,                                 /* goodGuy's horizontal range of movement - starting point */
@@ -370,6 +397,14 @@ export class Game {
 		Game.currentLevel.goodGuyFireColour = GAME_LEVEL_COLORS[Game.currentLevel.count%colourComboCount];
 		Game.currentLevel.badGuyColour = GAME_LEVEL_COLORS[Game.currentLevel.count%colourComboCount];
 		Game.currentLevel.badGuyFireColour = GAME_LEVEL_COLORS[Game.currentLevel.count%colourComboCount];
+		
+		var backgroundColourComboCount = GAME_LEVEL_BACKGROUND_COLORS.length;
+		Game.currentLevel.redLowerBound = GAME_LEVEL_BACKGROUND_COLORS[Game.currentLevel.count%backgroundColourComboCount].redLowerBound;
+		Game.currentLevel.redUpperBound = GAME_LEVEL_BACKGROUND_COLORS[Game.currentLevel.count%backgroundColourComboCount].redUpperBound;
+		Game.currentLevel.greenLowerBound = GAME_LEVEL_BACKGROUND_COLORS[Game.currentLevel.count%backgroundColourComboCount].greenLowerBound;
+		Game.currentLevel.greenUpperBound = GAME_LEVEL_BACKGROUND_COLORS[Game.currentLevel.count%backgroundColourComboCount].greenUpperBound;
+		Game.currentLevel.blueLowerBound = GAME_LEVEL_BACKGROUND_COLORS[Game.currentLevel.count%backgroundColourComboCount].blueLowerBound;
+		Game.currentLevel.blueUpperBound = GAME_LEVEL_BACKGROUND_COLORS[Game.currentLevel.count%backgroundColourComboCount].blueUpperBound;
 	}
 
 	static splashRender = function() {
@@ -457,9 +492,13 @@ export class Game {
 		Game.playerDestroyedText = null;
 
 		// These objects contain sub-objects. We need to recursively remove these sub-objects as well.
+		if (Game.background) {
+			Game.background.clearContents();
+			Game.background = null;
+		}
 		if (Game.badGuyField) {
-				Game.badGuyField.clearContents();
-				Game.badGuyField = null;
+			Game.badGuyField.clearContents();
+			Game.badGuyField = null;
 		}
 	}
 

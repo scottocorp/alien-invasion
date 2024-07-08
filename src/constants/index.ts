@@ -34,6 +34,17 @@ export const GAME_LEVEL_BASE = {
 // We cycle through these colors to provide some variety to the levels.
 export const GAME_LEVEL_COLORS = ['255,85,170', '255,0,0', '0,170,255'];
 
+// Enter integer values into each of the 3 pairs of R,G,B color ranges below. 
+// (I usually Choose 0,85 or 86,170 or 171,255 for each of the 3 pairs of R,G,B color ranges below.)
+// The R,G,B of each particle will then take a random value that falls within the corresponding ranges. 
+// So, for example, if you want the particles to be randomly colored, but all with a "reddish hue", then enter higher numbers
+// into the two Red bounds, like below:
+export const GAME_LEVEL_BACKGROUND_COLORS = [
+  {redLowerBound: 171, redUpperBound: 255, greenLowerBound: 0, greenUpperBound: 85, blueLowerBound: 86, blueUpperBound: 170},
+  {redLowerBound: 171, redUpperBound: 255, greenLowerBound: 0, greenUpperBound: 85, blueLowerBound: 0, blueUpperBound: 85}, 								
+  {redLowerBound: 0, redUpperBound: 85, greenLowerBound: 86, greenUpperBound: 170, blueLowerBound: 171, blueUpperBound: 255}								 
+  ];
+
 // GoodGuyStatus contains all the possible good guy statuses.
 export enum GoodGuyStatus {
   DESTROYED = -1,
