@@ -123,7 +123,7 @@ export class Game {
 					Game.canvas.element.width - 10, 	/* goodGuy's horizontal range of movement - width */
 					Game.canvas.element.height - 22, 	/* y position of goodGuy */
 					Game.currentLevel.goodGuySpeed, 	/* goodGuy Speed */
-					Game.currentLevel.goodGuyColour 	/* goodGuy Colour */
+					Game.currentLevel.goodGuyColor 	/* goodGuy Color */
 				);
 				
 				// Resume badGuy missile bombardment and advancement... 
@@ -303,7 +303,7 @@ export class Game {
 			Game.canvas.element.width - 10,     /* goodGuy's horizontal range of movement - width */
 			Game.canvas.element.height - 22,    /* y position of goodGuy */
 			Game.currentLevel.goodGuySpeed,  		/* goodGuy Speed */	
-			Game.currentLevel.goodGuyColour  		/* goodGuy Colour */
+			Game.currentLevel.goodGuyColor  		/* goodGuy Color */
 		);
 
 		Game.badGuyField = new BadGuyField(
@@ -391,20 +391,20 @@ export class Game {
 			Game.currentLevel.badGuyFireSpeed += 0.25;
 		}
 
-		// Also, we cycle through all the different colour combinations we created, to add some variety.
-		var colourComboCount = GAME_LEVEL_COLORS.length;
-		Game.currentLevel.goodGuyColour = GAME_LEVEL_COLORS[Game.currentLevel.count%colourComboCount];
-		Game.currentLevel.goodGuyFireColour = GAME_LEVEL_COLORS[Game.currentLevel.count%colourComboCount];
-		Game.currentLevel.badGuyColour = GAME_LEVEL_COLORS[Game.currentLevel.count%colourComboCount];
-		Game.currentLevel.badGuyFireColour = GAME_LEVEL_COLORS[Game.currentLevel.count%colourComboCount];
+		// Also, we cycle through all the different color combinations we created, to add some variety.
+		var colorComboCount = GAME_LEVEL_COLORS.length;
+		Game.currentLevel.goodGuyColor = GAME_LEVEL_COLORS[Game.currentLevel.count%colorComboCount];
+		Game.currentLevel.goodGuyFireColor = GAME_LEVEL_COLORS[Game.currentLevel.count%colorComboCount];
+		Game.currentLevel.badGuyColor = GAME_LEVEL_COLORS[Game.currentLevel.count%colorComboCount];
+		Game.currentLevel.badGuyFireColor = GAME_LEVEL_COLORS[Game.currentLevel.count%colorComboCount];
 		
-		var backgroundColourComboCount = GAME_LEVEL_BACKGROUND_COLORS.length;
-		Game.currentLevel.redLowerBound = GAME_LEVEL_BACKGROUND_COLORS[Game.currentLevel.count%backgroundColourComboCount].redLowerBound;
-		Game.currentLevel.redUpperBound = GAME_LEVEL_BACKGROUND_COLORS[Game.currentLevel.count%backgroundColourComboCount].redUpperBound;
-		Game.currentLevel.greenLowerBound = GAME_LEVEL_BACKGROUND_COLORS[Game.currentLevel.count%backgroundColourComboCount].greenLowerBound;
-		Game.currentLevel.greenUpperBound = GAME_LEVEL_BACKGROUND_COLORS[Game.currentLevel.count%backgroundColourComboCount].greenUpperBound;
-		Game.currentLevel.blueLowerBound = GAME_LEVEL_BACKGROUND_COLORS[Game.currentLevel.count%backgroundColourComboCount].blueLowerBound;
-		Game.currentLevel.blueUpperBound = GAME_LEVEL_BACKGROUND_COLORS[Game.currentLevel.count%backgroundColourComboCount].blueUpperBound;
+		var backgroundColorComboCount = GAME_LEVEL_BACKGROUND_COLORS.length;
+		Game.currentLevel.redLowerBound = GAME_LEVEL_BACKGROUND_COLORS[Game.currentLevel.count%backgroundColorComboCount].redLowerBound;
+		Game.currentLevel.redUpperBound = GAME_LEVEL_BACKGROUND_COLORS[Game.currentLevel.count%backgroundColorComboCount].redUpperBound;
+		Game.currentLevel.greenLowerBound = GAME_LEVEL_BACKGROUND_COLORS[Game.currentLevel.count%backgroundColorComboCount].greenLowerBound;
+		Game.currentLevel.greenUpperBound = GAME_LEVEL_BACKGROUND_COLORS[Game.currentLevel.count%backgroundColorComboCount].greenUpperBound;
+		Game.currentLevel.blueLowerBound = GAME_LEVEL_BACKGROUND_COLORS[Game.currentLevel.count%backgroundColorComboCount].blueLowerBound;
+		Game.currentLevel.blueUpperBound = GAME_LEVEL_BACKGROUND_COLORS[Game.currentLevel.count%backgroundColorComboCount].blueUpperBound;
 	}
 
 	static splashRender = function() {
@@ -529,7 +529,7 @@ export class Game {
 						Game.goodGuy.xPos,
 						Game.goodGuy.yPos,
 						Game.currentLevel.goodGuyFireSpeed,
-						Game.currentLevel.goodGuyFireColour
+						Game.currentLevel.goodGuyFireColor
 					);
 				}
 			}

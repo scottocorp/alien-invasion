@@ -27,7 +27,7 @@ export class BadGuyField {
         this._context,
         this._gameLevel.badGuyCoordinateList[i].x,
         this._gameLevel.badGuyCoordinateList[i].y,
-        this._gameLevel.badGuyColour,
+        this._gameLevel.badGuyColor,
         i
       );
     }
@@ -52,7 +52,7 @@ export class BadGuyField {
       this._badGuys[badGuyIndex].xPos, 
       this._badGuys[badGuyIndex].yPos + this._badGuys[badGuyIndex].radius, 
       this._gameLevel.badGuyFireSpeed,
-      this._gameLevel.badGuyFireColour,
+      this._gameLevel.badGuyFireColor,
       badGuyIndex
     );
   }
