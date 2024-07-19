@@ -16,6 +16,7 @@ export class BadGuy {
   private _status: BadGuyStatus;
   private _alpha: number;
   private _explosionAudio: any;
+  private _game: Game;
 
   constructor(
     private _context: any,
@@ -31,6 +32,8 @@ export class BadGuy {
 
     this._explosionAudio = new Audio(explosionAudio);
 
+    this._game = new Game();
+
     this.create();
   }
 
@@ -39,11 +42,11 @@ export class BadGuy {
     if (this.status==BadGuyStatus.DESTROYED) {
       // By this stage the bad guy has been shot, and after a period of TRANSITION, whereby he flickers, her status has been changed to DESTROYED.
       // So now we need to remove her from the canvas.		
-      Game.badGuyField.removeBadGuy(this._badGuyIndex);
+      this._game.badGuyField.removeBadGuy(this._badGuyIndex);
       
       // But if that was the last bad guy, we've reached the end of the level, and so we need to change the game state to END_OF_LEVEL.
-      if (Game.badGuyField.badGuysLeft==0) {
-        Game.gameStateHandler(GameState.END_OF_LEVEL);
+      if (this._game.badGuyField.badGuysLeft==0) {
+        this._game.gameStateHandler(GameState.END_OF_LEVEL);
       }
 
       return;
@@ -51,12 +54,12 @@ export class BadGuy {
     
     if (this.yPos > CANVAS_BADGUY_LIMIT) {
       // If any bad guy reaches this far down the canvas, then its game over, goodGuy!
-      Game.gameStateHandler(GameState.END_OF_GAME);
+      this._game.gameStateHandler(GameState.END_OF_GAME);
     }
       
-    if (Game.goodGuyFire && this.status != BadGuyStatus.TRANSITION) {
+    if (this._game.goodGuyFire && this.status != BadGuyStatus.TRANSITION) {
 
-      if (hitTest1(this, Game.goodGuyFire)) {
+      if (hitTest1(this, this._game.goodGuyFire)) {
     
         //SHOT HER!
         
@@ -82,10 +85,10 @@ export class BadGuy {
         this.explosion();
 
         // Remove the goodGuy fire from the canvas.
-        Game.goodGuyFire = null;
+        this._game.goodGuyFire = null;
 
         // Increment the score
-        Game.scoreText.increment();
+        this._game.scoreText.increment();
       }
     }
 

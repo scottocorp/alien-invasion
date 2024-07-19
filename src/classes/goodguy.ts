@@ -17,6 +17,7 @@ export class GoodGuy {
   private _alpha: number;
   private _fireAudio: any;
   private _explosionAudio: any;
+  private _game: Game;
 
   constructor(
     private _context: any,
@@ -39,6 +40,8 @@ export class GoodGuy {
     this._fireAudio = new Audio(fireAudio);
     this._explosionAudio = new Audio(explosionAudio);
 
+    this._game = new Game();
+
     this.create();
   }
 
@@ -48,24 +51,24 @@ export class GoodGuy {
       // By this stage the goodGuy has been shot, and after a period of TRANSITION (where she flickers) her status has been changed to DESTROYED.
       
       // So first we decremnet the number of live she has left.		
-      Game.livesText.decrement();
+      this._game.livesText.decrement();
 		
-      if (parseInt(Game.livesText.text[0])==0) {
+      if (parseInt(this._game.livesText.text[0])==0) {
         // If all the lives are used up, we've reached the end of the game, and so we need to change the game state to END_OF_GAME.
-        Game.gameStateHandler(GameState.END_OF_GAME);
+        this._game.gameStateHandler(GameState.END_OF_GAME);
       } else {
         // Otherwise we only need to change the game state to PLAYER_DESTROYED.
-        Game.gameStateHandler(GameState.PLAYER_DESTROYED);
+        this._game.gameStateHandler(GameState.PLAYER_DESTROYED);
       }
       return;
     }
     
     // We iterate through all the bad guy's to see if any fired a missile that hit the goodGuy.	
-    for (let i = 0; i < Game.badGuyField.numBadGuys; i++) {
+    for (let i = 0; i < this._game.badGuyField.numBadGuys; i++) {
   
-      if (Game.badGuyField.badGuysFire[i]) {
+      if (this._game.badGuyField.badGuysFire[i]) {
 
-        if (hitTest2(this, Game.badGuyField.badGuysFire[i])) {
+        if (hitTest2(this, this._game.badGuyField.badGuysFire[i])) {
 
           //YOU'VE BEEN HIT!
           
@@ -76,20 +79,20 @@ export class GoodGuy {
           animateCanvasObject(
             10,
             50,
-            {transitionEffect: function(frame: number, time:number) {
-              Game.goodGuy._status = GoodGuyStatus.TRANSITION;
-              Game.goodGuy._alpha = frame % 2;
-            }},
-            {afterTransition: function(frame: number, time:number) {
-              Game.goodGuy._status = GoodGuyStatus.DESTROYED;
-            }}
+            {transitionEffect: (function(frame: number, time:number) {
+              this._game.goodGuy._status = GoodGuyStatus.TRANSITION;
+              this._game.goodGuy._alpha = frame % 2;
+            }).bind(this)},
+            {afterTransition: (function(frame: number, time:number) {
+              this._game.goodGuy._status = GoodGuyStatus.DESTROYED;
+            }).bind(this)}
           );
           
           // Make an explosion sound.
           this.explosion();
 
           // Remove the bad guy fire from the canvas.
-          Game.badGuyField.removeBadGuyFire(i)
+          this._game.badGuyField.removeBadGuyFire(i)
         }
       }
     }

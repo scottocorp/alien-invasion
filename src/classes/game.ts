@@ -17,40 +17,47 @@ import { TextButton } from './textbutton';
 import { ParticleField } from './particlefield';
 
 export class Game {
-  static kibo: any;
-	static background: ParticleField;
-  static canvas: Canvas;
-	static currentLevel: any = null;
-  static goodGuy: GoodGuy;
-	static goodGuyFire: GoodGuyFire;
-	static badGuyField: BadGuyField;
-  static animationTimeoutId: number;
-	static badGuyFireIntervalId: number;
-	static advanceBadGuysIntervalId: number;
-	static playerDestroyedIntervalId: number;
-	static endOfLevelIntervalId: number;
-	static gameState: GameState;
-	static functionToAnimate: any;
-	static startButton: TextButton;
-	static gameHeader: TextButton;
-	static introText: TextButton;
-	static exitButton: TextButton;
-	static endOfLevelText: TextButton;
-	static playAgainButton: TextButton;
-	static scoreText: TextButton;
-	static livesText: TextButton;
-	static playerDestroyedText: TextButton;
+	static instance: Game;
 
-  static init = function () {
-    try {
+	private kibo: any;
+	private background: ParticleField;
+	private canvas: Canvas;
+	private currentLevel: any = null;
+	public goodGuy: GoodGuy;
+	public goodGuyFire: GoodGuyFire;
+	public badGuyField: BadGuyField;
+	private animationTimeoutId: number;
+	private badGuyFireIntervalId: number;
+	private advanceBadGuysIntervalId: number;
+	private playerDestroyedIntervalId: number;
+	private endOfLevelIntervalId: number;
+	private gameState: GameState;
+	private functionToAnimate: any;
+	private startButton: TextButton;
+	private gameHeader: TextButton;
+	private introText: TextButton;
+	private exitButton: TextButton;
+	private endOfLevelText: TextButton;
+	private playAgainButton: TextButton;
+	public scoreText: TextButton;
+	public livesText: TextButton;
+	private playerDestroyedText: TextButton;
+
+  constructor() {
+		try {
+			if (Game.instance) {
+				return Game.instance;
+			}
+			Game.instance = this;
+	
 			// Create the HTML canvas:
-      Game.canvas = new Canvas('canvas');
+      this.canvas = new Canvas('canvas');
 
 			// Set up keyboard event handlers:
-			Game.eventSetup();
+			this.eventSetup();
 
 			// We start by showing the splash screen:
-			Game.gameStateHandler(GameState.SPLASH);
+			this.gameStateHandler(GameState.SPLASH);
 			
     } catch (error) {
       if (error instanceof Error) {
@@ -59,7 +66,7 @@ export class Game {
     }
   }
 
-	static gameStateHandler = function(gameState: GameState) {
+	public gameStateHandler = function(gameState: GameState) {
 		// This function handles the overall game logic and "flow". This function is called from various points in the code to handle major events in 
 		// game-play, such as the goodGuy being destroyed, or the completion of a level.
 							
@@ -69,8 +76,8 @@ export class Game {
 				// Here we set up the splash screen that introduces the game and provides instructions.
 				console.log('SPLASH');
 				
-				Game.clearCanvas();
-				Game.splashInit();
+				this.clearCanvas();
+				this.splashInit();
 				
 				break;
 				
@@ -79,11 +86,11 @@ export class Game {
 				// Here we set up a new game.
 				console.log('NEW_GAME');
 				
-				Game.currentLevel = null;
-				Game.clearCanvas();
-				Game.getNextLevel();
-				Game.scoreInit();
-				Game.levelInit();
+				this.currentLevel = null;
+				this.clearCanvas();
+				this.getNextLevel();
+				this.scoreInit();
+				this.levelInit();
 				
 				break;
 				
@@ -92,9 +99,9 @@ export class Game {
 				// Here we set up a new level.
 				console.log('NEW_LEVEL');
 				
-				Game.clearCanvas();
-				Game.getNextLevel();
-				Game.levelInit();
+				this.clearCanvas();
+				this.getNextLevel();
+				this.levelInit();
 				
 				break;
 				
@@ -103,37 +110,37 @@ export class Game {
 				// Here we resume play after the goodGuy was destroyed by enemy fire.
 				console.log('LEVEL_RESUME');
 				
-				if (Game.badGuyField.badGuysLeft==0){
+				if (this.badGuyField.badGuysLeft==0){
 					// This is in case the player was destroyed JUST AFTER the last bad guy. 
-					if (parseInt(Game.livesText.text[0])==0) {
-						Game.gameStateHandler(GameState.END_OF_GAME);
+					if (parseInt(this.livesText.text[0])==0) {
+						this.gameStateHandler(GameState.END_OF_GAME);
 					} else {
-						Game.gameStateHandler(GameState.END_OF_LEVEL);
+						this.gameStateHandler(GameState.END_OF_LEVEL);
 					}
 					return;
 				}
 				
 				// Remove remnants of any previous game states...
-				Game.playerDestroyedText = null;
+				this.playerDestroyedText = null;
 
 				// Create appropriate canvas objects...
-				Game.goodGuy = new GoodGuy(
-					Game.canvas.ctx, 
+				this.goodGuy = new GoodGuy(
+					this.canvas.ctx, 
 					15, 															/* goodGuy's horizontal range of movement - starting point */
-					Game.canvas.element.width - 10, 	/* goodGuy's horizontal range of movement - width */
-					Game.canvas.element.height - 22, 	/* y position of goodGuy */
-					Game.currentLevel.goodGuySpeed, 	/* goodGuy Speed */
-					Game.currentLevel.goodGuyColor 	/* goodGuy Color */
+					this.canvas.element.width - 10, 	/* goodGuy's horizontal range of movement - width */
+					this.canvas.element.height - 22, 	/* y position of goodGuy */
+					this.currentLevel.goodGuySpeed, 	/* goodGuy Speed */
+					this.currentLevel.goodGuyColor 	/* goodGuy Color */
 				);
 				
 				// Resume badGuy missile bombardment and advancement... 
-				Game.badGuyFireIntervalId = window.setInterval(
-					Game.badGuyField.launchBadGuyFire.bind(Game.badGuyField), 
-					Game.currentLevel.badGuyFireIntervalDuration
+				this.badGuyFireIntervalId = window.setInterval(
+					this.badGuyField.launchBadGuyFire.bind(this.badGuyField), 
+					this.currentLevel.badGuyFireIntervalDuration
 				);
-				Game.advanceBadGuysIntervalId = window.setInterval(
-					Game.badGuyField.advanceBadGuys.bind(Game.badGuyField),
-					Game.currentLevel.advanceBadGuysIntervalDuration
+				this.advanceBadGuysIntervalId = window.setInterval(
+					this.badGuyField.advanceBadGuys.bind(this.badGuyField),
+					this.currentLevel.advanceBadGuysIntervalDuration
 				);
 				
 				break;		
@@ -145,15 +152,15 @@ export class Game {
 				console.log('PLAYER_DESTROYED');
 			
 				// Remove remnants any of previous game states...
-				clearInterval(Game.badGuyFireIntervalId);
-				clearInterval(Game.advanceBadGuysIntervalId);
-				clearInterval(Game.endOfLevelIntervalId);
-				Game.goodGuy = null;
-				Game.endOfLevelText = null;
+				clearInterval(this.badGuyFireIntervalId);
+				clearInterval(this.advanceBadGuysIntervalId);
+				clearInterval(this.endOfLevelIntervalId);
+				this.goodGuy = null;
+				this.endOfLevelText = null;
 				
 				// Create appropriate canvas objects...
-				Game.playerDestroyedText = new TextButton(
-					Game.canvas.ctx,
+				this.playerDestroyedText = new TextButton(
+					this.canvas.ctx,
 					['Player Destroyed'],
 					90, 
 					205, 
@@ -166,7 +173,7 @@ export class Game {
 				);
 
 				// Set a timeout. Once expired, we'll advance to the LEVEL_RESUME game state
-				Game.endOfLevelIntervalId = window.setTimeout(Game.gameStateHandler, 2000, GameState.LEVEL_RESUME);
+				this.endOfLevelIntervalId = window.setTimeout(this.gameStateHandler.bind(this), 2000, GameState.LEVEL_RESUME);
 				
 				break;
 				
@@ -177,14 +184,14 @@ export class Game {
 				console.log('END_OF_LEVEL');
 			
 				// Remove remnants of any of the previous game states...
-				clearInterval(Game.badGuyFireIntervalId);
-				clearInterval(Game.advanceBadGuysIntervalId);
-				clearInterval(Game.playerDestroyedIntervalId);
-				Game.playerDestroyedText = null;
+				clearInterval(this.badGuyFireIntervalId);
+				clearInterval(this.advanceBadGuysIntervalId);
+				clearInterval(this.playerDestroyedIntervalId);
+				this.playerDestroyedText = null;
 				
 				// Create appropriate canvas objects...
-				Game.endOfLevelText = new TextButton(
-					Game.canvas.ctx,
+				this.endOfLevelText = new TextButton(
+					this.canvas.ctx,
 					['Next Level'],
 					130, 
 					205, 
@@ -197,13 +204,13 @@ export class Game {
 				);
 				
 				// Set a timeout. Once expired, we'll advance to the NEW_LEVEL game state.
-				Game.endOfLevelIntervalId = window.setTimeout(Game.gameStateHandler, 2000, GameState.NEW_LEVEL);
+				this.endOfLevelIntervalId = window.setTimeout(this.gameStateHandler.bind(this), 2000, GameState.NEW_LEVEL);
 				
 				break;
 
 			case GameState.END_OF_GAME:
 
-				if (!Game.animationTimeoutId) {
+				if (!this.animationTimeoutId) {
 					// Multiple bad guys may trigger END_OF_GAME. Only handle the first.
 					break;
 				}
@@ -212,15 +219,15 @@ export class Game {
 				console.log('END_OF_GAME');
 			
 				// Remove remnants of any previous game states.
-				clearInterval(Game.badGuyFireIntervalId);
-				clearInterval(Game.advanceBadGuysIntervalId);
-				clearInterval(Game.endOfLevelIntervalId);
-				clearInterval(Game.playerDestroyedIntervalId);				
-				Game.goodGuy = null;
+				clearInterval(this.badGuyFireIntervalId);
+				clearInterval(this.advanceBadGuysIntervalId);
+				clearInterval(this.endOfLevelIntervalId);
+				clearInterval(this.playerDestroyedIntervalId);				
+				this.goodGuy = null;
 				
 				// Create appropriate canvas objects. In this case, a "play again" button.
-				Game.playAgainButton = new TextButton(
-					Game.canvas.ctx,
+				this.playAgainButton = new TextButton(
+					this.canvas.ctx,
 					['Play again?'],
 					120, 
 					205, 
@@ -230,55 +237,54 @@ export class Game {
 					'20pt Arial',
 					true,
 					// The following paramter is the function be be invoked when the button is clicked.
-					function(){
-						Game.gameStateHandler(GameState.NEW_GAME);
-					}
+					(function(){
+						this.gameStateHandler(GameState.NEW_GAME);
+					}).bind(this)
 				);
 
-				cancelAnimationFrame(Game.animationTimeoutId);
-				Game.animationTimeoutId = null;
+				cancelAnimationFrame(this.animationTimeoutId);
+				this.animationTimeoutId = null;
 
 				break;
 
 			default:			  
 		}		
 		
-		Game.gameState = gameState;	
+		this.gameState = gameState;	
 	}
 
-  static animationLoop = function() {
-		
+  public animationLoop = function() {
 		// requestAnimationFrame handles the animation for the whole game. It will invoke levelRender every 60th of a second or so.
-		Game.animationTimeoutId = requestAnimationFrame(Game.animationLoop);
+		this.animationTimeoutId = requestAnimationFrame(this.animationLoop.bind(this));
 
-		Game.functionToAnimate();
+		this.functionToAnimate();
 	}
 
-  static levelRender = function() {
+  private levelRender = function() {
 		// This method will be repeatedly called to animate the appropriate objects on the canvas.
 
 		// the following line of code clears the canvas...
-		Game.canvas.element.width = Game.canvas.element.width;
+		this.canvas.element.width = this.canvas.element.width;
 
-		Game.background.render();
-		if (Game.goodGuy) { Game.goodGuy.render(); }
-		if (Game.goodGuyFire) { Game.goodGuyFire.render(); }
-		if (Game.badGuyField) { Game.badGuyField.render(); }
-		Game.exitButton.render();
-		Game.scoreText.render();
-		Game.livesText.render();
-		if (Game.playerDestroyedText) { Game.playerDestroyedText.render(); }
-		if (Game.endOfLevelText) { Game.endOfLevelText.render(); }
-		if (Game.playAgainButton) { Game.playAgainButton.render(); }
+		this.background.render();
+		if (this.goodGuy) { this.goodGuy.render(); }
+		if (this.goodGuyFire) { this.goodGuyFire.render(); }
+		if (this.badGuyField) { this.badGuyField.render(); }
+		this.exitButton.render();
+		this.scoreText.render();
+		this.livesText.render();
+		if (this.playerDestroyedText) { this.playerDestroyedText.render(); }
+		if (this.endOfLevelText) { this.endOfLevelText.render(); }
+		if (this.playAgainButton) { this.playAgainButton.render(); }
   }
 
-  static levelInit = function() {
+  private levelInit = function() {
 
 		// This method creates the appropriate canvas objects.
 
-		Game.background = new ParticleField(
+		this.background = new ParticleField(
 			10, 																/* number of particles in the field */
-			Game.canvas.ctx, 
+			this.canvas.ctx, 
 			0,																	/* particlefield x pos */
 			0,																	/* particlefield y pos */
 			CANVAS_WIDTH,												/* particlefield width */
@@ -289,30 +295,30 @@ export class Game {
 			0,																	/* x speed of each particle: upper-bound */
 			1,																	/* y speed of each particle: lower-bound */
 			3,																	/* y speed of each particle: upper-bound */
-			Game.currentLevel.redLowerBound,		/* "red-ness" of each particle: lower-bound */
-			Game.currentLevel.redUpperBound,		/* "red-ness" of each particle: upper-bound */
-			Game.currentLevel.greenLowerBound,	/* "green-ness" of each particle: lower-bound */
-			Game.currentLevel.greenUpperBound,	/* "green-ness" of each particle: upper-bound */
-			Game.currentLevel.blueLowerBound,		/* "blue-ness" of each particle: lower-bound */
-			Game.currentLevel.blueUpperBound		/* "blue-ness" of each particle: upper-bound */
+			this.currentLevel.redLowerBound,		/* "red-ness" of each particle: lower-bound */
+			this.currentLevel.redUpperBound,		/* "red-ness" of each particle: upper-bound */
+			this.currentLevel.greenLowerBound,	/* "green-ness" of each particle: lower-bound */
+			this.currentLevel.greenUpperBound,	/* "green-ness" of each particle: upper-bound */
+			this.currentLevel.blueLowerBound,		/* "blue-ness" of each particle: lower-bound */
+			this.currentLevel.blueUpperBound		/* "blue-ness" of each particle: upper-bound */
 		);
 
-		Game.goodGuy = new GoodGuy(
-			Game.canvas.ctx, 
+		this.goodGuy = new GoodGuy(
+			this.canvas.ctx, 
 			15,                                 /* goodGuy's horizontal range of movement - starting point */
-			Game.canvas.element.width - 10,     /* goodGuy's horizontal range of movement - width */
-			Game.canvas.element.height - 22,    /* y position of goodGuy */
-			Game.currentLevel.goodGuySpeed,  		/* goodGuy Speed */	
-			Game.currentLevel.goodGuyColor  		/* goodGuy Color */
+			this.canvas.element.width - 10,     /* goodGuy's horizontal range of movement - width */
+			this.canvas.element.height - 22,    /* y position of goodGuy */
+			this.currentLevel.goodGuySpeed,  		/* goodGuy Speed */	
+			this.currentLevel.goodGuyColor  		/* goodGuy Color */
 		);
 
-		Game.badGuyField = new BadGuyField(
-			Game.canvas.ctx, 
-			Game.currentLevel
+		this.badGuyField = new BadGuyField(
+			this.canvas.ctx, 
+			this.currentLevel
 		);
 
-		Game.exitButton = new TextButton(
-			Game.canvas.ctx,
+		this.exitButton = new TextButton(
+			this.canvas.ctx,
 			['exit'],
 			175, 
 			10, 
@@ -321,32 +327,32 @@ export class Game {
 			'255,255,255',
 			'20pt Arial',
 			true,
-			function(){
-				Game.gameStateHandler(GameState.SPLASH);
-			}
+			(function(){
+				this.gameStateHandler(GameState.SPLASH);
+			}).bind(this)
 		);
 
-		Game.advanceBadGuysIntervalId = window.setInterval(
-			Game.badGuyField.advanceBadGuys.bind(Game.badGuyField),
-			Game.currentLevel.advanceBadGuysIntervalDuration
+		this.advanceBadGuysIntervalId = window.setInterval(
+			this.badGuyField.advanceBadGuys.bind(this.badGuyField),
+			this.currentLevel.advanceBadGuysIntervalDuration
 		);
 		
-		Game.badGuyFireIntervalId = window.setInterval(
-			Game.badGuyField.launchBadGuyFire.bind(Game.badGuyField),
-			Game.currentLevel.badGuyFireIntervalDuration
+		this.badGuyFireIntervalId = window.setInterval(
+			this.badGuyField.launchBadGuyFire.bind(this.badGuyField),
+			this.currentLevel.badGuyFireIntervalDuration
 		);
 		
-		Game.functionToAnimate = Game.levelRender;
+		this.functionToAnimate = this.levelRender;
 
-		Game.animationLoop();
+		this.animationLoop();
 	}
 
-	static scoreInit = function() {
+	private scoreInit = function() {
 			
 		// Here we initialise the two objects on the canvas that hold the player's score and number of lives left.
 		
-		Game.scoreText = new TextButton(
-			Game.canvas.ctx,
+		this.scoreText = new TextButton(
+			this.canvas.ctx,
 			['0'],
 			10, 
 			10, 
@@ -358,8 +364,8 @@ export class Game {
 			null
 		);
 							
-		Game.livesText = new TextButton(
-			Game.canvas.ctx,
+		this.livesText = new TextButton(
+			this.canvas.ctx,
 			['3'],
 			340, 
 			10, 
@@ -372,60 +378,60 @@ export class Game {
 		);
 	}
 	
-	static getNextLevel = function() {	
+	private getNextLevel = function() {	
 		// Here we set up parameters for the current level. These parameters also determine the difficulty of the level. 
 		
-		if (!Game.currentLevel) {
+		if (!this.currentLevel) {
 			// We initialize currentLevel to the first level by cloning gameLevelBase.
-			Game.currentLevel = JSON.parse(JSON.stringify(GAME_LEVEL_BASE))
+			this.currentLevel = JSON.parse(JSON.stringify(GAME_LEVEL_BASE))
 		} else {			
-			Game.currentLevel.count++;
+			this.currentLevel.count++;
 
 			// But as the game progresses, the difficulty increases.
 			// For example, the bad guys start to close in!
-			for (let i = 0; i < Game.currentLevel.badGuyCoordinateList.length; i++) {
-				Game.currentLevel.badGuyCoordinateList[i].y += 20;
+			for (let i = 0; i < this.currentLevel.badGuyCoordinateList.length; i++) {
+				this.currentLevel.badGuyCoordinateList[i].y += 20;
 			}
 
 			// ...and the bombs dropped by the bad guys become faster...
-			Game.currentLevel.badGuyFireSpeed += 0.25;
+			this.currentLevel.badGuyFireSpeed += 0.25;
 		}
 
 		// Also, we cycle through all the different color combinations we created, to add some variety.
 		var colorComboCount = GAME_LEVEL_COLORS.length;
-		Game.currentLevel.goodGuyColor = GAME_LEVEL_COLORS[Game.currentLevel.count%colorComboCount];
-		Game.currentLevel.goodGuyFireColor = GAME_LEVEL_COLORS[Game.currentLevel.count%colorComboCount];
-		Game.currentLevel.badGuyColor = GAME_LEVEL_COLORS[Game.currentLevel.count%colorComboCount];
-		Game.currentLevel.badGuyFireColor = GAME_LEVEL_COLORS[Game.currentLevel.count%colorComboCount];
+		this.currentLevel.goodGuyColor = GAME_LEVEL_COLORS[this.currentLevel.count%colorComboCount];
+		this.currentLevel.goodGuyFireColor = GAME_LEVEL_COLORS[this.currentLevel.count%colorComboCount];
+		this.currentLevel.badGuyColor = GAME_LEVEL_COLORS[this.currentLevel.count%colorComboCount];
+		this.currentLevel.badGuyFireColor = GAME_LEVEL_COLORS[this.currentLevel.count%colorComboCount];
 		
 		var backgroundColorComboCount = GAME_LEVEL_BACKGROUND_COLORS.length;
-		Game.currentLevel.redLowerBound = GAME_LEVEL_BACKGROUND_COLORS[Game.currentLevel.count%backgroundColorComboCount].redLowerBound;
-		Game.currentLevel.redUpperBound = GAME_LEVEL_BACKGROUND_COLORS[Game.currentLevel.count%backgroundColorComboCount].redUpperBound;
-		Game.currentLevel.greenLowerBound = GAME_LEVEL_BACKGROUND_COLORS[Game.currentLevel.count%backgroundColorComboCount].greenLowerBound;
-		Game.currentLevel.greenUpperBound = GAME_LEVEL_BACKGROUND_COLORS[Game.currentLevel.count%backgroundColorComboCount].greenUpperBound;
-		Game.currentLevel.blueLowerBound = GAME_LEVEL_BACKGROUND_COLORS[Game.currentLevel.count%backgroundColorComboCount].blueLowerBound;
-		Game.currentLevel.blueUpperBound = GAME_LEVEL_BACKGROUND_COLORS[Game.currentLevel.count%backgroundColorComboCount].blueUpperBound;
+		this.currentLevel.redLowerBound = GAME_LEVEL_BACKGROUND_COLORS[this.currentLevel.count%backgroundColorComboCount].redLowerBound;
+		this.currentLevel.redUpperBound = GAME_LEVEL_BACKGROUND_COLORS[this.currentLevel.count%backgroundColorComboCount].redUpperBound;
+		this.currentLevel.greenLowerBound = GAME_LEVEL_BACKGROUND_COLORS[this.currentLevel.count%backgroundColorComboCount].greenLowerBound;
+		this.currentLevel.greenUpperBound = GAME_LEVEL_BACKGROUND_COLORS[this.currentLevel.count%backgroundColorComboCount].greenUpperBound;
+		this.currentLevel.blueLowerBound = GAME_LEVEL_BACKGROUND_COLORS[this.currentLevel.count%backgroundColorComboCount].blueLowerBound;
+		this.currentLevel.blueUpperBound = GAME_LEVEL_BACKGROUND_COLORS[this.currentLevel.count%backgroundColorComboCount].blueUpperBound;
 	}
 
-	static splashRender = function() {
+	private splashRender = function() {
 
 		// This function will render the appropriate objects on the canvas.
 	
 		// The following line of code clears the canvas...
-		Game.canvas.element.width = Game.canvas.element.width;
+		this.canvas.element.width = this.canvas.element.width;
 		
 		// The following objects will be rendered on the canvas.
-		Game.startButton.render();
-		Game.gameHeader.render();
-		Game.introText.render();
+		this.startButton.render();
+		this.gameHeader.render();
+		this.introText.render();
 	}
 
-	static splashInit = function() {
+	private splashInit = function() {
 	
 		// This function creates the appropriate canvas objects. 
 			
-		Game.gameHeader = new TextButton(
-			Game.canvas.ctx,
+		this.gameHeader = new TextButton(
+			this.canvas.ctx,
 			['Alien Invasion'],
 			10, 
 			10, 
@@ -437,8 +443,8 @@ export class Game {
 			null
 		);	
 	
-		Game.introText = new TextButton(
-			Game.canvas.ctx,
+		this.introText = new TextButton(
+			this.canvas.ctx,
 			['Use left and right arrow keys to move.', 'Use the spacebar to fire.', 'Good luck!'],
 			10, 
 			50, 
@@ -450,8 +456,8 @@ export class Game {
 			null
 		);	
 	
-		Game.startButton = new TextButton(
-			Game.canvas.ctx,
+		this.startButton = new TextButton(
+			this.canvas.ctx,
 			['start'],
 			170, 
 			205, 
@@ -460,80 +466,79 @@ export class Game {
 			'255,255,255',
 			'20pt Arial',
 			true,
-			function(){
-				Game.gameStateHandler(GameState.NEW_GAME);
-			}
+			(function(){
+				this.gameStateHandler(GameState.NEW_GAME)
+			}).bind(this)
     );
 
-		Game.functionToAnimate = Game.splashRender;
+		this.functionToAnimate = this.splashRender;
 
-		Game.animationLoop();
+		this.animationLoop();
 	}
 
-	static clearCanvas = function() {
+	private clearCanvas = function() {
 		// Here we clear the canvas of all objects and timers.
 
-		cancelAnimationFrame(Game.animationTimeoutId);
-		clearInterval(Game.badGuyFireIntervalId);
-		clearInterval(Game.advanceBadGuysIntervalId);
-		clearInterval(Game.endOfLevelIntervalId);
-		clearInterval(Game.playerDestroyedIntervalId);
+		cancelAnimationFrame(this.animationTimeoutId);
+		clearInterval(this.badGuyFireIntervalId);
+		clearInterval(this.advanceBadGuysIntervalId);
+		clearInterval(this.endOfLevelIntervalId);
+		clearInterval(this.playerDestroyedIntervalId);
 
-		Game.gameState = null;
-		Game.goodGuy = null;
-		Game.goodGuyFire = null;
-		Game.gameHeader = null;
-		Game.introText = null;
-		Game.startButton = null;
-		Game.exitButton = null;
-		Game.endOfLevelText = null;
-		Game.playAgainButton = null;
-		Game.functionToAnimate = null;
-		Game.playerDestroyedText = null;
+		this.gameState = null;
+		this.goodGuy = null;
+		this.goodGuyFire = null;
+		this.gameHeader = null;
+		this.introText = null;
+		this.startButton = null;
+		this.exitButton = null;
+		this.endOfLevelText = null;
+		this.playAgainButton = null;
+		this.functionToAnimate = null;
+		this.playerDestroyedText = null;
 
 		// These objects contain sub-objects. We need to recursively remove these sub-objects as well.
-		if (Game.background) {
-			Game.background.clearContents();
-			Game.background = null;
+		if (this.background) {
+			this.background.clearContents();
+			this.background = null;
 		}
-		if (Game.badGuyField) {
-			Game.badGuyField.clearContents();
-			Game.badGuyField = null;
+		if (this.badGuyField) {
+			this.badGuyField.clearContents();
+			this.badGuyField = null;
 		}
 	}
 
-  static eventSetup = function () {
-    Game.kibo = new Kibo();
-    Game.kibo
-		.down('left', () => {
-			if (!!Game.goodGuy) {
-      	Game.goodGuy.status = GoodGuyStatus.LEFT;
+  private eventSetup = function () {
+    this.kibo = new Kibo();
+    this.kibo.down('left', (() => {
+			if (!!this.goodGuy) {
+      	this.goodGuy.status = GoodGuyStatus.LEFT;
 			}
-    })
-		.down('right', () => {
-			if (!!Game.goodGuy) {
-				Game.goodGuy.status = GoodGuyStatus.RIGHT;
+    }).bind(this));
+		this.kibo.down('right', (() => {
+			if (!!this.goodGuy) {
+				this.goodGuy.status = GoodGuyStatus.RIGHT;
 			}
-    })
-		.up('any', function() {
-			if (!!Game.goodGuy) {
-				Game.goodGuy.status = GoodGuyStatus.STATIONARY;
+    }).bind(this));
+		this.kibo.up('any', (() => {
+			if (!!this.goodGuy) {
+				this.goodGuy.status = GoodGuyStatus.STATIONARY;
 			}
-    });
-		Game.kibo.down('space', function () {
+    }).bind(this));
+		this.kibo.down('space', (() => {
 			// Fire a missile.
-      if (Game.goodGuy) {
-				if (!Game.goodGuyFire && Game.goodGuy) {
-					Game.goodGuyFire = new GoodGuyFire(
-						Game.canvas.ctx,
-						Game.goodGuy.xPos,
-						Game.goodGuy.yPos,
-						Game.currentLevel.goodGuyFireSpeed,
-						Game.currentLevel.goodGuyFireColor
+      if (this.goodGuy) {
+				if (!this.goodGuyFire && this.goodGuy) {
+					this.goodGuyFire = new GoodGuyFire(
+						this.canvas.ctx,
+						this.goodGuy.xPos,
+						this.goodGuy.yPos,
+						this.currentLevel.goodGuyFireSpeed,
+						this.currentLevel.goodGuyFireColor
 					);
-					Game.goodGuy.fire();
+					this.goodGuy.fire();
 				}
 			}
-		});
+		}).bind(this));
   }
 }

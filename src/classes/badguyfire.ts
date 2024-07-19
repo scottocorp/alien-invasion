@@ -6,6 +6,7 @@ export class BadGuyFire {
 
   private _radius: number;
   private _alpha: number;
+  private _game: Game;
 
   constructor(
     private _context: any,
@@ -18,13 +19,15 @@ export class BadGuyFire {
 
     this._radius = 3;
     this._alpha = 1.0;
+
+    this._game = new Game();
   }
 
   public render = function () {
 
     if (this._yPos > CANVAS_HEIGHT) {
       // The missile has reached the bottom of the canvas and so must be removed.
-      Game.badGuyField.removeBadGuyFire(this._badGuysFireIndex);
+      this._game.badGuyField.removeBadGuyFire(this._badGuysFireIndex);
     }
     else {
       // Each animation frame we move the missile down a small amount to give the illusion of movement.

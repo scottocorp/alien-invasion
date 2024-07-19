@@ -1,3 +1,5 @@
 import { Game } from './classes/game';
 
-window.addEventListener("load", Game.init);
+window.addEventListener("load", (e: Event) => {
+  new Game();
+})
